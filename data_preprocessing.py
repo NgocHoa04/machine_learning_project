@@ -112,10 +112,9 @@ class DataTransformer:
         ])
     
     def fit(self, X, y=None):
-        self.pipeline.fit(X)
+        self.pipeline.fit(X) 
         return self
     
     def transform(self, X):
         return self.pipeline.transform(X)
-    
     
