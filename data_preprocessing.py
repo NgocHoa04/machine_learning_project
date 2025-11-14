@@ -84,37 +84,47 @@ def windspeed_scale_function():
         feature_names_out='one-to-one'
     )
 
-class DataTransformer:
-    def __init__(self, numeric_features, categorical_features):
-        self.numeric_features = numeric_features
+class DataTransformer(BaseEstimator, TransformerMixin):
+    def __init__(self, categorical_features):
         self.categorical_features = categorical_features
         
-        self.numeric_transformer = ColumnTransformer(transformers=[
-            ('percentage_scaler', percentage_scale_function(), 
-             ['precipprob', 'cloudcover', 'precipcover']),
-            ('windspeed_scaler', windspeed_scale_function(), 
-             ['windspeed']),
-            ('precip_scaler', precip_scale_function(), 
-             ['precip']),
-            ('solarradiation_scaler', solarradiation_scale_function(), 
-             ['solarradiation']),
-            ('humidity_scaler', humidity_scale_function(), 
-             ['humidity'])
-        ], remainder='passthrough')
-        
-        self.categorical_transformer = ColumnTransformer(transformers=[
-            ('onehot', OneHotEncoder(handle_unknown='ignore'), categorical_features)
-        ], remainder='passthrough')
-        
-        self.pipeline = Pipeline(steps=[
-            ('numeric_transformer', self.numeric_transformer),
-            ('categorical_transformer', self.categorical_transformer)
-        ])
+        self.preprocessor = ColumnTransformer(
+            transformers=[
+                # --- Numerical features transformer ---
+                ('percentage_scaler', percentage_scale_function(), 
+                 ['precipprob', 'cloudcover', 'precipcover']),
+                ('windspeed_scaler', windspeed_scale_function(), 
+                 ['windspeed']),
+                ('precip_scaler', precip_scale_function(), 
+                 ['precip']),
+                ('solarradiation_scaler', solarradiation_scale_function(), 
+                 ['solarradiation']),
+                ('humidity_scaler', humidity_scale_function(), 
+                 ['humidity']),
+                
+                # --- Categorical features transformer ---
+                ('onehot', OneHotEncoder(handle_unknown='ignore', drop='first'), 
+                 self.categorical_features)
+            ],
+            # remainder
+            remainder='passthrough' 
+        )
     
     def fit(self, X, y=None):
-        self.pipeline.fit(X) 
+        self.preprocessor.fit(X, y) 
+        # Take and save feature names
+        self.feature_names_out_ = self.preprocessor.get_feature_names_out()
         return self
     
     def transform(self, X):
-        return self.pipeline.transform(X)
-    
+        # Take the NumPy array as usual  
+        data_numpy = self.preprocessor.transform(X)
+        
+        # Create DataFrame from the array and saved column names
+        data_df = pd.DataFrame(
+            data_numpy, 
+            columns=self.feature_names_out_, 
+            index=X.index  # Keep the initial index
+        )
+        
+        return data_df
