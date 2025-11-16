@@ -3,4 +3,6 @@ pandas
 scikit-learn
 lightgbm
 xgboost
+requests
+python-dotenv
 

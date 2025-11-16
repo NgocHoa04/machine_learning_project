@@ -5,6 +5,7 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, FunctionTransformer, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
+from src.data.data_helper import *
 
 # Remove features with low variance
 class VarianceThresholdSelector(BaseEstimator, TransformerMixin):
@@ -50,40 +51,6 @@ remove_low_variance_pipeline = Pipeline(steps=[
 
 
 # DATA TRANSFORMATION
-
-def precip_scale_function():
-    return FunctionTransformer(func=lambda x: np.log1p(x),
-                               validate=True,
-                               feature_names_out='one-to-one')
-
-def solarradiation_scale_function():
-    return FunctionTransformer(
-        lambda x: np.log1p(x)/np.log1p(x.max()), 
-        validate=True,
-        feature_names_out='one-to-one'
-    )
-
-def humidity_scale_function():
-    return FunctionTransformer(
-        lambda x: x / 100.0, 
-        validate=True,
-        feature_names_out='one-to-one'
-    )
-
-def percentage_scale_function():
-    return FunctionTransformer(
-        lambda x: x / 100.0, 
-        validate=True,
-        feature_names_out='one-to-one'
-    )
-
-def windspeed_scale_function():
-    return FunctionTransformer(
-        lambda x: x / 100.0, 
-        validate=True,
-        feature_names_out='one-to-one'
-    )
-
 class DataTransformer(BaseEstimator, TransformerMixin):
     def __init__(self, categorical_features):
         self.categorical_features = categorical_features
