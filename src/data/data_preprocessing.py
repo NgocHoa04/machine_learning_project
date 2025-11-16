@@ -112,3 +112,123 @@ class DataTransformer(BaseEstimator, TransformerMixin):
             data_df[col] = pd.to_numeric(data_df[col], errors='ignore')
         
         return data_df
+    
+# IMPUTATION OF MISSING VALUES
+from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import IterativeImputer
+from sklearn.ensemble import RandomForestRegressor
+
+class PrecipImputer(BaseEstimator, TransformerMixin):
+    def __init__(self, precip_col="precip", precipprob_col="precipprob", short_limit=6):
+        self.precip_col = precip_col
+        self.precipprob_col = precipprob_col
+        self.short_limit = short_limit
+        self.imputer = None
+
+    def fit(self, X, y=None):
+        df = X.copy()
+        if self.precipprob_col in df.columns:
+            mask_zero = df[self.precip_col].isna() & (df[self.precipprob_col] == 0)
+            df.loc[mask_zero, self.precip_col] = 0.0
+        df[self.precip_col] = df[self.precip_col].interpolate(method="time", limit=self.short_limit)
+        cols = [c for c in [self.precip_col, "cloudcover", "humidity", self.precipprob_col, "windspeed"] if c in df.columns]
+        if len(cols) > 1:
+            self.imputer = IterativeImputer(estimator=RandomForestRegressor(n_estimators=100, max_depth=10, n_jobs=-1, random_state=0), max_iter=10)
+            self.imputer.fit(df[cols])
+        return self
+
+    def transform(self, X):
+        df = X.copy()
+        if self.precipprob_col in df.columns:
+            mask_zero = df[self.precip_col].isna() & (df[self.precipprob_col] == 0)
+            df.loc[mask_zero, self.precip_col] = 0.0
+        df[self.precip_col] = df[self.precip_col].interpolate(method="time", limit=self.short_limit)
+        if self.imputer:
+            cols = self.imputer.feature_names_in_
+            df[cols] = self.imputer.transform(df[cols])
+        return df
+    
+from sklearn.impute import KNNImputer
+
+class WinddirImputer(BaseEstimator, TransformerMixin):
+    def __init__(self, winddir_col="winddir", windspeed_col="windspeed", short_limit=6, knn_neighbors=5):
+        self.winddir_col = winddir_col
+        self.windspeed_col = windspeed_col
+        self.short_limit = short_limit
+        self.knn_neighbors = knn_neighbors
+        self.imputer = None
+
+    def fit(self, X, y=None):
+        df = X.copy()
+        wd_rad = np.deg2rad(df[self.winddir_col])
+        df["wd_sin"] = np.sin(wd_rad)
+        df["wd_cos"] = np.cos(wd_rad)
+        df["wd_sin"] = df["wd_sin"].interpolate(method="time", limit=self.short_limit)
+        df["wd_cos"] = df["wd_cos"].interpolate(method="time", limit=self.short_limit)
+        cols = ["wd_sin", "wd_cos"]
+        if self.windspeed_col in df.columns:
+            cols.append(self.windspeed_col)
+        self.imputer = KNNImputer(n_neighbors=self.knn_neighbors)
+        self.imputer.fit(df[cols])
+        return self
+
+    def transform(self, X):
+        df = X.copy()
+        wd_rad = np.deg2rad(df[self.winddir_col])
+        df["wd_sin"] = np.sin(wd_rad)
+        df["wd_cos"] = np.cos(wd_rad)
+        df["wd_sin"] = df["wd_sin"].interpolate(method="time", limit=self.short_limit)
+        df["wd_cos"] = df["wd_cos"].interpolate(method="time", limit=self.short_limit)
+        cols = ["wd_sin", "wd_cos"]
+        if self.windspeed_col in df.columns:
+            cols.append(self.windspeed_col)
+        df[cols] = self.imputer.transform(df[cols])
+        df[self.winddir_col] = (np.rad2deg(np.arctan2(df["wd_sin"], df["wd_cos"])) + 360) % 360
+        return df
+    
+class SolarradiationImputer(BaseEstimator, TransformerMixin):
+    def __init__(self, sol_col="solarradiation", lat=21.0278, short_limit=6):
+        self.sol_col = sol_col
+        self.lat = lat
+        self.short_limit = short_limit
+        self.imputer = None
+
+    def solar_elevation(self, index):
+        doy = index.dayofyear.values
+        hour = index.hour + index.minute / 60.0
+        decl = 23.44 * np.sin(2 * np.pi * (284 + doy) / 365)
+        decl_rad = np.deg2rad(decl)
+        lat_rad = np.deg2rad(self.lat)
+        hour_angle = np.deg2rad((hour - 12) * 15)
+        elev = np.arcsin(np.sin(lat_rad) * np.sin(decl_rad) + np.cos(lat_rad) * np.cos(decl_rad) * np.cos(hour_angle))
+        return np.rad2deg(elev)
+
+    def fit(self, X, y=None):
+        df = X.copy()
+        df["solar_elev"] = self.solar_elevation(df.index)
+        df.loc[df["solar_elev"] <= 0, self.sol_col] = 0.0
+        df.loc[df["solar_elev"] > 0, self.sol_col] = df.loc[df["solar_elev"] > 0, self.sol_col].interpolate(method="time", limit=self.short_limit)
+        cols = [c for c in [self.sol_col, "cloudcover", "uvindex", "solarenergy", "humidity"] if c in df.columns]
+        if len(cols) > 1:
+            self.imputer = IterativeImputer(estimator=RandomForestRegressor(n_estimators=100, max_depth=10, n_jobs=-1, random_state=0), max_iter=10)
+            self.imputer.fit(df[cols])
+        return self
+
+    def transform(self, X):
+        df = X.copy()
+        df["solar_elev"] = self.solar_elevation(df.index)
+        df.loc[df["solar_elev"] <= 0, self.sol_col] = 0.0
+        df.loc[df["solar_elev"] > 0, self.sol_col] = df.loc[df["solar_elev"] > 0, self.sol_col].interpolate(method="time", limit=self.short_limit)
+        if self.imputer:
+            cols = self.imputer.feature_names_in_
+            df[cols] = self.imputer.transform(df[cols])
+        return df
+    
+from sklearn.pipeline import Pipeline
+
+impute_pipeline = Pipeline([
+    ("impute_precip", PrecipImputer()),
+    ("impute_winddir", WinddirImputer()),
+    ("impute_solar", SolarradiationImputer())
+])
