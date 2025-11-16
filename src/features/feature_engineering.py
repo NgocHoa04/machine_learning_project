@@ -4,7 +4,7 @@ import pandas as pd
 from typing import Sequence, Optional
 
 
-class HanoiWeatherFE:
+class feature_engineering_class:
     """
 
 
@@ -147,7 +147,7 @@ class HanoiWeatherFE:
             # ---------- ROLLING ----------
             for w in self.roll_windows:
                 # luôn shift(1) để tránh dùng dữ liệu ngày hiện tại (no leakage)
-                base = out[col].shift(1).rolling(window=w)
+                base = out[col].rolling(window=w)
                 out[f"{col}_roll{w}d_mean"] = base.mean()
                 out[f"{col}_roll{w}d_std"] = base.std()
 
