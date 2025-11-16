@@ -5,4 +5,5 @@ lightgbm
 xgboost
 requests
 python-dotenv
-
+gradio
+plotly
