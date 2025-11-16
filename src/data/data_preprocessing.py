@@ -17,7 +17,7 @@ class VarianceThresholdSelector(BaseEstimator, TransformerMixin):
         numeric_cols = X.select_dtypes(include=['float64', 'int64']).columns
         self.numeric_cols = numeric_cols
         self.selector.fit(X[numeric_cols])
-        # Save retained columns
+        # Save retained columns 
         self.retained_cols = numeric_cols[self.selector.get_support()]
         # Save dropped columns for logging
         self.dropped_cols = [col for col in numeric_cols if col not in self.retained_cols]
