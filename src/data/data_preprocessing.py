@@ -6,7 +6,7 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler, FunctionTransfor
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from src.data.data_helper import * 
-
+import re
 # Remove features with low variance
 class VarianceThresholdSelector(BaseEstimator, TransformerMixin):
     def __init__(self, threshold=0):
@@ -56,35 +56,58 @@ class DataTransformer(BaseEstimator, TransformerMixin):
         self.categorical_features = categorical_features
         
         self.preprocessor = ColumnTransformer(
-            transformers= [
-                ('onehot', OneHotEncoder(handle_unknown='ignore', drop='first', sparse_output=False), 
-                 self.categorical_features)
-            ], 
-            # remainder
+            transformers=[
+                (
+                    'onehot',
+                    OneHotEncoder(
+                        handle_unknown='ignore',
+                        drop='first',
+                        sparse_output=False
+                    ),
+                    self.categorical_features
+                )
+            ],
             remainder='passthrough',
             verbose_feature_names_out=False
         )
-    
+
+    @staticmethod
+    def _clean_name(name: str) -> str:
+        """
+        Làm sạch tên cột:
+        - Thay dấu phẩy và khoảng trắng bằng '_'
+        - Bỏ / thay các ký tự đặc biệt khác thành '_'
+        """
+        name = name.replace(',', '_')
+        name = name.replace(' ', '_')
+        # Nếu muốn chặt chẽ hơn thì:
+        name = re.sub(r'[^0-9a-zA-Z_]', '_', name)
+        return name
+
     def fit(self, X, y=None):
-        self.preprocessor.fit(X, y) 
-        # Take and save feature names
-        self.feature_names_out_ = self.preprocessor.get_feature_names_out()
+        self.preprocessor.fit(X, y)
+
+        raw_feature_names = self.preprocessor.get_feature_names_out()
+        # Lưu cả mapping nếu sau này cần tra lại
+        self.feature_name_map_ = {
+            raw: self._clean_name(raw) for raw in raw_feature_names
+        }
+        self.feature_names_out_ = np.array(
+            [self.feature_name_map_[raw] for raw in raw_feature_names]
+        )
         return self
     
     def transform(self, X):
-        # Take the NumPy array as usual  
         data_numpy = self.preprocessor.transform(X)
-        
-        # Create DataFrame from the array and saved column names
+
         data_df = pd.DataFrame(
             data_numpy, 
-            columns=self.feature_names_out_, 
-            index=X.index  # Keep the initial index
+            columns=self.feature_names_out_,
+            index=X.index
         )
 
-        # Convert numerical columns to float
+        # Convert numerical columns to float nếu cần
         for col in data_df.columns:
-            # If it can be converted to numeric, then convert
             data_df[col] = pd.to_numeric(data_df[col], errors='ignore')
         
         return data_df
