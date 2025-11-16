@@ -12,6 +12,6 @@ def train_test_split(df):
 before_model_pipeline = Pipeline(steps=[
     ('remove_low_variance', data_preprocessing.remove_low_variance_pipeline),
     ('data_transformation', data_preprocessing.DataTransformer(categorical_features=['conditions'])),
-    ('feature_engineering', feature_engineering.feature_engineering_class())
+    ('feature_engineering', feature_engineering.HanoiDailyFE())
 ]
 )

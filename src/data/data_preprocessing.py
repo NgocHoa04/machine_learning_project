@@ -6,7 +6,7 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler, FunctionTransfor
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from .data_helper import *          
-import re
+import re 
 
 # Remove features with low variance
 class VarianceThresholdSelector(BaseEstimator, TransformerMixin):
