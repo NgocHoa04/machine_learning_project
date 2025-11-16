@@ -89,25 +89,13 @@ class DataTransformer(BaseEstimator, TransformerMixin):
         self.categorical_features = categorical_features
         
         self.preprocessor = ColumnTransformer(
-            transformers=[
-                # --- Numerical features transformer ---
-                ('percentage_scaler', percentage_scale_function(), 
-                 ['precipprob', 'cloudcover', 'precipcover']),
-                ('windspeed_scaler', windspeed_scale_function(), 
-                 ['windspeed']),
-                ('precip_scaler', precip_scale_function(), 
-                 ['precip']),
-                ('solarradiation_scaler', solarradiation_scale_function(), 
-                 ['solarradiation']),
-                ('humidity_scaler', humidity_scale_function(), 
-                 ['humidity']),
-                
-                # --- Categorical features transformer ---
-                ('onehot', OneHotEncoder(handle_unknown='ignore', drop='first'), 
+            transformers= [
+                ('onehot', OneHotEncoder(handle_unknown='ignore', drop='first', sparse_output=False), 
                  self.categorical_features)
-            ],
+            ], 
             # remainder
-            remainder='passthrough' 
+            remainder='passthrough',
+            verbose_feature_names_out=False
         )
     
     def fit(self, X, y=None):
@@ -126,5 +114,10 @@ class DataTransformer(BaseEstimator, TransformerMixin):
             columns=self.feature_names_out_, 
             index=X.index  # Keep the initial index
         )
+
+        # Convert numerical columns to float
+        for col in data_df.columns:
+            # If it can be converted to numeric, then convert
+            data_df[col] = pd.to_numeric(data_df[col], errors='ignore')
         
         return data_df
