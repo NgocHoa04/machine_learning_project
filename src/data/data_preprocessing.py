@@ -80,13 +80,10 @@ class DataTransformer(BaseEstimator, TransformerMixin):
     @staticmethod
     def _clean_name(name: str) -> str:
         """
-        Làm sạch tên cột:
-        - Thay dấu phẩy và khoảng trắng bằng '_'
-        - Bỏ / thay các ký tự đặc biệt khác thành '_'
+        Clean feature name by:
+        - Replace commas and spaces with '_'
+        - Remove/replace other special characters with '_'
         """
-        name = name.replace(',', '_')
-        name = name.replace(' ', '_')
-        # Nếu muốn chặt chẽ hơn thì:
         name = re.sub(r'[^0-9a-zA-Z_]', '_', name)
         return name
 
@@ -94,7 +91,7 @@ class DataTransformer(BaseEstimator, TransformerMixin):
         self.preprocessor.fit(X, y)
 
         raw_feature_names = self.preprocessor.get_feature_names_out()
-        # Lưu cả mapping nếu sau này cần tra lại
+        # Save mapping for later reference if needed
         self.feature_name_map_ = {
             raw: self._clean_name(raw) for raw in raw_feature_names
         }
@@ -112,7 +109,7 @@ class DataTransformer(BaseEstimator, TransformerMixin):
             index=X.index
         )
 
-        # Convert numerical columns to float nếu cần
+        # Convert numerical columns to float if needed
         for col in data_df.columns:
             data_df[col] = pd.to_numeric(data_df[col], errors='ignore')
         

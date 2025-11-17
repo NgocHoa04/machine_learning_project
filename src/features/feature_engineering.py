@@ -150,7 +150,7 @@ class HanoiDailyFE(BaseEstimator, TransformerMixin):
 
             # ---------- Rolling features ----------
             for w in self.roll_windows:
-                # Always apply shift(1) before rolling to avoid using current day's value
+                # 
                 base = out[col].rolling(window=w)
                 out[f"{col}_roll{w}d_mean"] = base.mean()
                 out[f"{col}_roll{w}d_std"] = base.std()
@@ -239,7 +239,6 @@ class HanoiDailyFE(BaseEstimator, TransformerMixin):
             self.winddir_col,
             self.sunrise_col,
             self.sunset_col,
-            "conditions",
         ]
         for col in set(to_drop):
             if col in out.columns:
@@ -446,7 +445,7 @@ class HanoiHourlyFE:
 
             # ROLLING (MEAN & STD) - Chỉ áp dụng cho Base Cols
             for w in self.roll_windows:
-                base = out[col].shift(1).rolling(window=w, min_periods=1)
+                base = out[col].rolling(window=w, min_periods=1)
                 out[f"{col}_roll{w}h_mean"] = base.mean()
                 out[f"{col}_roll{w}h_std"] = base.std().fillna(0.0)
 
