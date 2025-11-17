@@ -5,7 +5,7 @@
 [![Machine Learning](https://img.shields.io/badge/ML-Time%20Series%20Forecasting-orange.svg)](https://github.com)
 [![Gradio](https://img.shields.io/badge/Interface-Gradio-orange.svg)](https://gradio.app/)
 
-A production-ready machine learning system for temperature forecasting in Hanoi, Vietnam. The system leverages ensemble learning methods and advanced feature engineering to predict future temperatures based on historical weather data from Visual Crossing Weather API.
+A production-ready machine learning system for temperature forecasting in Hanoi, Vietnam. The system leverages advanced learning methods and advanced feature engineering to predict future temperatures based on historical weather data from Visual Crossing Weather API.
 
 ---
 
@@ -38,8 +38,8 @@ Build a robust temperature forecasting system for Hanoi that provides:
 - Production-ready API for integration with external systems
 
 ### Methodology
-- **Time Series Forecasting** using ensemble learning (XGBoost, LightGBM, CatBoost)
-- **Advanced Feature Engineering** with 229+ engineered features
+- **Time Series Forecasting** using ensemble learning XGBoost
+- **Advanced Feature Engineering** with 140+ engineered features
 - **Comprehensive Preprocessing** including outlier detection and feature scaling
 - **Robust Evaluation** using cross-validation and industry-standard metrics
 - **Interactive UI** built with Gradio for easy deployment
@@ -50,7 +50,7 @@ Build a robust temperature forecasting system for Hanoi that provides:
 
 **Course**: Machine Learning - DSEB 65B  
 **Instructor**: Trinh Tuan Phong  
-**Academic Year**: 2024-2025  
+**Academic Year**: 2025-2026 
 
 ### 👥 Team Members
 
@@ -67,7 +67,7 @@ Build a robust temperature forecasting system for Hanoi that provides:
 This project is developed as part of the Machine Learning course curriculum at the National Economics University (NEU). The system demonstrates practical application of:
 
 - Time series analysis and forecasting
-- Ensemble machine learning techniques
+- Machine learning techniques
 - Feature engineering for weather data
 - Production deployment practices
 - Real-world ML system architecture
@@ -84,8 +84,8 @@ This project is developed as part of the Machine Learning course curriculum at t
 ## ✨ Key Features
 
 - **🔄 Dual Forecasting Modes**: Daily and hourly temperature predictions
-- **🎯 Advanced ML Models**: Ensemble of XGBoost, LightGBM, and CatBoost
-- **🔧 229+ Engineered Features**: Including monsoon patterns, lag features, and rolling statistics
+- **🎯 Advanced ML Models**: XGBoost
+- **🔧 140+ Engineered Features**: Including monsoon patterns, lag features, and rolling statistics
 - **📊 Interactive Dashboard**: Built with Gradio for real-time predictions
 - **🌏 Hanoi-Specific**: Tailored for Vietnamese tropical monsoon climate patterns
 - **📈 Production-Ready**: Complete with logging, error handling, and model versioning
@@ -100,7 +100,7 @@ This project is developed as part of the Machine Learning course curriculum at t
 - **Provider**: Visual Crossing Weather API
 - **Location**: Hanoi, Vietnam (Latitude: 21.0285°N, Longitude: 105.8542°E)
 - **Time Period**: Historical daily and hourly weather data
-- **Update Frequency**: Real-time via API integration
+- **Update Frequency**: Real-time via API integration (researching and developing)
 
 ### Dataset Structure
 
@@ -111,26 +111,22 @@ This project is developed as part of the Machine Learning course curriculum at t
 #### Processed Data
 - **`Hanoi_Daily_Selected.csv`**: Cleaned daily dataset with selected features
 - **`Hanoi_Hourly_Selected.csv`**: Cleaned hourly dataset
-- **`Hanoi_daily_FE_full.csv`**: Feature-engineered dataset (229 features)
+- **`Hanoi_daily_FE_full.csv`**: Feature-engineered dataset (142 features)
+- **`Hanoi_hourly_FE_full.csv`**: Feature-engineered dataset (120 features)
 
-### Weather Variables
+### Weather Raw Variables using for model
 
 | Variable | Description | Unit | Range |
 |----------|-------------|------|-------|
 | `temp` | Temperature | °C | -5 to 40 |
-| `tempmax` | Maximum temperature | °C | - |
-| `tempmin` | Minimum temperature | °C | - |
 | `humidity` | Relative humidity | % | 0-100 |
 | `dew` | Dew point temperature | °C | - |
 | `precip` | Precipitation amount | mm | 0+ |
-| `precipprob` | Precipitation probability | % | 0-100 |
-| `precipcover` | Precipitation coverage | % | 0-100 |
 | `windspeed` | Wind speed | km/h | 0+ |
 | `winddir` | Wind direction | degrees | 0-360 |
 | `solarradiation` | Solar radiation | W/m² | 0+ |
 | `cloudcover` | Cloud coverage | % | 0-100 |
-| `visibility` | Visibility distance | km | 0+ |
-| `pressure` | Atmospheric pressure | hPa | 950-1050 |
+| `sealevelpressure` | Atmospheric pressure | hPa | 950-1050 |
 | `sunrise` | Sunrise time | timestamp | - |
 | `sunset` | Sunset time | timestamp | - |
 
@@ -265,31 +261,16 @@ The system follows a structured ETL (Extract, Transform, Load) pipeline:
 
 **Pipeline Components**:
 
-```python
-class DataPreprocessor:
-    - handle_missing_values()      # Imputation strategies
-    - detect_outliers()            # Statistical outlier detection
-    - transform_features()         # Log/Box-Cox transformations
-    - scale_features()             # StandardScaler/MinMaxScaler
-    - remove_low_variance()        # Feature variance filtering
-```
-
 **Preprocessing Steps**:
 
 1. **Missing Value Handling**
-   - Forward fill for time-series continuity
-   - Interpolation for short gaps
-   - Domain-specific imputation (e.g., 0 for precipitation)
+   - Fill using logic of features
 
-2. **Outlier Treatment**
-   - IQR method for temperature variables
-   - Log transformation for skewed distributions (precipitation)
-   - Winsorization for extreme values
-
-3. **Feature Scaling**
+3. **Feature Scaling** (No needed for final model)
    - StandardScaler: `temp`, `windspeed`, `pressure`
    - MinMaxScaler: `humidity`, `cloudcover`, `precipcover`
    - Custom scaling: `solarradiation` (0-1 based on max theoretical)
+     
 
 4. **Feature Selection**
    - Variance threshold filtering (threshold=0.01)
@@ -307,7 +288,7 @@ Training Pipeline:
 1. Load preprocessed and engineered data
 2. Time-based train/test split (80/20)
 3. Hyperparameter tuning with Optuna
-4. Cross-validation (TimeSeriesSplit, n_splits=5)
+4. Walk-forward validation (TimeSeriesSplit, n_splits=5)
 5. Model training with early stopping
 6. Model evaluation and metrics computation
 7. Model serialization and versioning
@@ -328,7 +309,7 @@ Production-ready Gradio interface with:
 
 ### Overview
 
-The `HanoiWeatherFE` class transforms 18 raw weather variables into **229 engineered features** through domain-specific transformations tailored for Hanoi's climate.
+The `HanoiWeatherFE` class transforms 12 raw weather variables into **140 engineered features** through domain-specific transformations tailored for Hanoi's climate.
 
 ### Feature Categories
 
@@ -364,22 +345,12 @@ Capturing cyclical patterns in time:
 
 ```python
 # Day of year (1-365)
-df['dayofyear_sin'] = np.sin(2 * np.pi * df['dayofyear'] / 365)
-df['dayofyear_cos'] = np.cos(2 * np.pi * df['dayofyear'] / 365)
+df['doy_sin'] = np.sin(2 * np.pi * df['dayofyear'] / 365)
+df['doy_cos'] = np.cos(2 * np.pi * df['dayofyear'] / 365)
 
-# Month (1-12)
-df['month_sin'] = np.sin(2 * np.pi * df['month'] / 12)
-df['month_cos'] = np.cos(2 * np.pi * df['month'] / 12)
-
-# Day of week (0-6)
-df['dayofweek_sin'] = np.sin(2 * np.pi * df['dayofweek'] / 7)
-df['dayofweek_cos'] = np.cos(2 * np.pi * df['dayofweek'] / 7)
-```
 
 **Generated Features**:
-- Circular time encodings: `dayofyear_sin/cos`, `month_sin/cos`, `dayofweek_sin/cos`
-- `quarter`: Quarter of year (Q1-Q4)
-- `season`: Meteorological season (Spring/Summer/Autumn/Winter)
+- Circular time encodings: `dayofyear_sin/cos`
 - `daylength_hours`: Duration of daylight (sunset - sunrise)
 - `sun_position`: Normalized time between sunrise and sunset
 - `is_weekend`: Boolean for Saturday/Sunday
@@ -393,18 +364,17 @@ Historical values to capture temporal dependencies:
 **Lag Periods**: 1, 2, 3, 7 days
 
 **Variables with Lag Features**:
-- Temperature-related: `temp`, `tempmax`, `tempmin`
-- Humidity: `humidity_scale__humidity`
-- Wind: `scale_num__windspeed`
-- Precipitation: `log_outliers__precip`
-- Solar: `solarradiation_scale__solarradiation`
-- Cloud: `minmax_num__cloudcover`, `minmax_num__precipcover`
-- Derived: `daylength_hours`
+  "humidity",
+  "windspeed",
+  "precip",
+  "solarradiation",
+  "cloudcover",
+  "precipcover",
+  "daylength_hours",
+  "dew"
 
 **Example Features**:
 ```python
-df['temp_lag_1']  # Yesterday's temperature
-df['temp_lag_7']  # Temperature 7 days ago
 df['humidity_lag_3']  # Humidity 3 days ago
 ```
 
@@ -416,27 +386,27 @@ df['humidity_lag_3']  # Humidity 3 days ago
 
 Capture short-term and long-term trends:
 
-**Window Sizes**: 3, 7, 14, 21, 30, 60, 90 days
+**Window Sizes**: 3, 7, 14, 60, 90 days
 
-**Aggregations**: mean, std, min, max
+**Aggregations**: mean, std
 
 **Applied to Key Variables**:
-- Temperature
-- Humidity  
-- Precipitation
-- Wind speed
-- Solar radiation
-- Cloud cover
+  "humidity",
+  "windspeed",
+  "precip",
+  "solarradiation",
+  "cloudcover",
+  "precipcover",
+  "daylength_hours",
+  "dew"
 
 **Example Features**:
 ```python
-df['temp_roll_7_mean']      # 7-day average temperature
-df['temp_roll_7_std']       # 7-day temperature volatility
-df['precip_roll_30_sum']    # 30-day cumulative rainfall
-df['humidity_roll_14_max']  # 14-day maximum humidity
+df['precip_roll_30_sum']    # 60-day cumulative rainfall
+
 ```
 
-**Total Rolling Features**: 6 variables × 7 windows × 4 aggregations = 168 features
+**Total Rolling Features**: 8 variables × 5 windows × 2 aggregations = 80 features
 
 **🔒 Data Leakage Prevention**:
 ```python
@@ -447,30 +417,6 @@ df['temp_roll_7_mean'] = df['temp'].rolling(7).mean().shift(1)
 
 **Why This Matters**: Rolling statistics capture weather trends and volatility, which are crucial for forecasting. A 7-day cooling trend is very predictive.
 
-
-#### 5. 🔗 Interaction Features
-
-Physical interactions between weather variables:
-
-```python
-# Temperature-Humidity interaction
-df['temp_humidity_interaction'] = df['temp'] * df['humidity'] / 100
-
-# Wind-Precipitation interaction (storm intensity)
-df['wind_precip_interaction'] = df['windspeed'] * df['precip']
-
-# Solar radiation adjusted for cloud cover
-df['solar_cloud_interaction'] = df['solarradiation'] * (1 - df['cloudcover']/100)
-```
-
-**Generated Features**:
-- `temp_humidity_interaction`: Feels-like temperature factor
-- `wind_precip_interaction`: Storm intensity indicator
-- `solar_cloud_interaction`: Effective solar radiation
-- `temp_dew_diff`: Temperature-dewpoint spread
-- `pressure_temp_interaction`: Atmospheric stability
-
-**Why This Matters**: Weather phenomena result from interactions. High wind + high precipitation = storm conditions that affect temperature differently than calm rain.
 
 #### 6. 🌡️ Domain-Specific Features
 
@@ -483,46 +429,7 @@ def calculate_heat_index(temp: float, humidity: float) -> float:
     return heat_index
 ```
 
-**Wind Chill Factor**:
-```python
-def calculate_wind_chill(temp: float, windspeed: float) -> float:
-    """Calculate wind chill for temperatures below 10°C"""
-    if temp <= 10 and windspeed > 4.8:
-        wind_chill = 13.12 + 0.6215 * temp - 11.37 * (windspeed ** 0.16) + 0.3965 * temp * (windspeed ** 0.16)
-        return wind_chill
-    return temp
-```
 
-**Precipitation Intensity Ratio**:
-```python
-df['precip_intensity'] = df['precip'] / df['precipcover']
-# High ratio = intense localized rain, low ratio = widespread drizzle
-```
-
-**Daylight Exposure**:
-```python
-df['daylight_solar_exposure'] = df['daylength_hours'] * df['solarradiation']
-# Total daily solar energy exposure
-```
-
-**Generated Features**:
-- `heat_index`: Apparent temperature considering humidity
-- `wind_chill`: Apparent temperature considering wind
-- `precip_intensity`: Rainfall intensity per unit area
-- `daylight_solar_exposure`: Daily accumulated solar energy
-- `comfortable_temp_flag`: Boolean for 18-26°C range
-
-### Feature Engineering Summary
-
-| Category | Number of Features | Purpose |
-|----------|-------------------|---------|
-| Monsoon & Wind | 10 | Capture Hanoi-specific climate patterns |
-| Temporal | 15 | Model seasonal and cyclical trends |
-| Lag Features | 32 | Capture short-term autocorrelation |
-| Rolling Statistics | 168 | Model trends and volatility |
-| Interactions | 8 | Capture physical phenomena |
-| Domain-Specific | 10 | Meteorological knowledge |
-| **Total Engineered** | **229** | **Comprehensive feature set** |
 
 ### Implementation
 
@@ -553,22 +460,19 @@ print(f"Engineered features: {df_engineered.shape[1]}")
 
 The system employs ensemble learning with multiple gradient boosting algorithms:
 
-#### 1. **XGBoost** (Primary Model)
+#### **XGBoost** (Primary Model)
 
 ```yaml
 XGBRegressor:
-  n_estimators: 500
-  learning_rate: 0.05
-  max_depth: 7
-  min_child_weight: 3
-  subsample: 0.8
-  colsample_bytree: 0.8
-  gamma: 0.1
-  reg_alpha: 0.1
-  reg_lambda: 1.0
-  objective: 'reg:squarederror'
-  eval_metric: 'rmse'
-  early_stopping_rounds: 50
+  n_estimators: 800
+  "learning_rate": 0.010884241446616105,
+  "max_depth": 3,
+  "gamma": 0.47994313253143916,
+  "reg_lambda": 7.417462539407784,
+  "reg_alpha": 0.7052016204390688,
+  "subsample": 0.5214374220725809,
+  "colsample_bytree": 0.5984212687818358,
+  "min_child_weight": 3
 ```
 
 **Advantages**:
@@ -603,107 +507,33 @@ LGBMRegressor:
 
 **Use Case**: Rapid prototyping and hourly forecasts
 
-#### 3. **CatBoost** (Robust Option)
-
-```yaml
-CatBoostRegressor:
-  iterations: 500
-  learning_rate: 0.05
-  depth: 7
-  l2_leaf_reg: 3.0
-  bootstrap_type: 'Bayesian'
-  bagging_temperature: 1.0
-  loss_function: 'RMSE'
-  eval_metric: 'RMSE'
-  early_stopping_rounds: 50
-```
-
-**Advantages**:
-- Best handling of categorical features
-- Robust to overfitting
-- Ordered boosting for better generalization
-- Minimal hyperparameter tuning needed
-
-**Use Case**: Ensemble component and baseline comparison
 
 ### Model Training Pipeline
 
 ```python
 # src/model/run_model_daily.py
 
-from src.model.daily_model import DailyTemperatureModel
-from src.evaluation.evaluation_metrics import ModelEvaluator
+from src.model.daily_model 
 
-# 1. Initialize model
-model = DailyTemperatureModel(model_type='xgboost')
+# 1. Load data
+X_train, y_train, X_test, y_test = model.train_test_split()
 
-# 2. Load data
-X_train, y_train, X_test, y_test = model.load_data()
+# 2. Hyperparameters tuning using Optuna integrated Walk-forward
 
-# 3. Train with cross-validation
-model.train(
-    X_train, y_train,
-    cv_folds=5,
-    optimize_hyperparams=True,
-    n_trials=100  # Optuna trials
-)
+XGBoost_pipeline = class MultiHorizonWalkForwardOptuna_XGBoost_Pipeline()
+XGBoost_pipeline.add_target_shifts()
+XGBoost_pipeline.create_walkforward_folds()
+XGBoost_pipeline.run_optuna(n_trials=100)
+XGBoost_pipeline.train_final_models()
 
-# 4. Evaluate
-evaluator = ModelEvaluator()
-results = evaluator.evaluate(model, X_test, y_test)
-
-# 5. Save model
-model.save('models_pkl/daily_temp_xgboost_v1.pkl')
-```
-
-### Hyperparameter Optimization
-
-Using **Optuna** for Bayesian optimization:
+# 3. Evaluation 
 
 ```python
-import optuna
+train_metrics = XGBoost_pipeline.evaluate_train_models()
 
-def objective(trial):
-    params = {
-        'n_estimators': trial.suggest_int('n_estimators', 100, 1000),
-        'learning_rate': trial.suggest_loguniform('learning_rate', 0.01, 0.3),
-        'max_depth': trial.suggest_int('max_depth', 3, 10),
-        'min_child_weight': trial.suggest_int('min_child_weight', 1, 10),
-        'subsample': trial.suggest_uniform('subsample', 0.5, 1.0),
-        'colsample_bytree': trial.suggest_uniform('colsample_bytree', 0.5, 1.0),
-    }
-    
-    model = XGBRegressor(**params)
-    score = cross_val_score(model, X_train, y_train, cv=5, scoring='neg_rmse')
-    return -score.mean()
+test_df_shifted = XGBoost_pipeline.prepare_test_dataset(test_dataset)
+test_metrics = XGBoost_pipeline.evaluate_final_models(test_df_shifted)
 
-study = optuna.create_study(direction='minimize')
-study.optimize(objective, n_trials=100)
-best_params = study.best_params
-```
-
-### Evaluation Metrics
-
-```python
-# src/evaluation/evaluation_metrics.py
-
-class ModelEvaluator:
-    
-    @staticmethod
-    def calculate_metrics(y_true, y_pred):
-        """Calculate comprehensive evaluation metrics"""
-        
-        rmse = np.sqrt(mean_squared_error(y_true, y_pred))
-        mae = mean_absolute_error(y_true, y_pred)
-        r2 = r2_score(y_true, y_pred)
-        mape = np.mean(np.abs((y_true - y_pred) / y_true)) * 100
-        
-        return {
-            'RMSE': rmse,      # Root Mean Squared Error (°C)
-            'MAE': mae,        # Mean Absolute Error (°C)
-            'R²': r2,          # Coefficient of Determination
-            'MAPE': mape       # Mean Absolute Percentage Error (%)
-        }
 ```
 
 **Metric Interpretations**:
@@ -715,30 +545,7 @@ class ModelEvaluator:
 | **R²** | $1 - \frac{\sum(y_i - \hat{y}_i)^2}{\sum(y_i - \bar{y})^2}$ | > 0.95 | Proportion of variance explained |
 | **MAPE** | $\frac{100\%}{n}\sum_{i=1}^{n}\|\frac{y_i - \hat{y}_i}{y_i}\|$ | < 5% | Relative error percentage |
 
-### Cross-Validation Strategy
 
-**Time Series Split** to prevent data leakage:
-
-```python
-from sklearn.model_selection import TimeSeriesSplit
-
-tscv = TimeSeriesSplit(n_splits=5)
-
-for train_idx, val_idx in tscv.split(X):
-    X_train, X_val = X[train_idx], X[val_idx]
-    y_train, y_val = y[train_idx], y[val_idx]
-    
-    # Train and validate
-    model.fit(X_train, y_train)
-    score = model.score(X_val, y_val)
-```
-
-**Why Time Series Split?**
-- Respects temporal order (no future data in training)
-- Mimics real-world deployment scenario
-- Prevents optimistic performance estimates
-
----
 
 ## 🚀 Installation
 
@@ -901,79 +708,31 @@ jupyter notebook notebooks/daily/05_run_model.ipynb
 ## 📈 Results
 
 ### Model Performance (Daily Forecasting)
+**Train**
+| Horizon | RMSE | MAE | MAPE (%) | MSE | R² |
+|------|------|------|----------|------|------|
+| 1 | 1.2064 | 0.9269 | 4.0046 | 1.4553 | 0.9441 |
+| 2 | 1.6675 | 1.2968 | 5.6879 | 2.7806 | 0.8934 |
+| 3 | 1.8056 | 1.4328 | 6.3273 | 3.2604 | 0.8752 |
+| 4 | 1.8200 | 1.4554 | 6.4304 | 3.3125 | 0.8734 |
+| 5 | 1.8213 | 1.4543 | 6.4200 | 3.3170 | 0.8733 |
 
-| Model | RMSE (°C) | MAE (°C) | R² Score | MAPE (%) | Training Time |
-|-------|-----------|----------|----------|----------|---------------|
-| **XGBoost** | **0.87** | **0.64** | **0.973** | **2.41** | 3.2 min |
-| LightGBM | 0.91 | 0.68 | 0.969 | 2.58 | 1.1 min |
-| CatBoost | 0.89 | 0.66 | 0.971 | 2.49 | 4.5 min |
-| Random Forest | 1.12 | 0.83 | 0.951 | 3.14 | 2.8 min |
-| Gradient Boosting | 1.05 | 0.78 | 0.958 | 2.95 | 5.2 min |
+**Test**
+| Horizon | RMSE | MAE  | MAPE | MSE | R² |
+|------|------|------|------|------|------|
+| 1 | 1.4689 | 1.1555 | 4.9016 | 2.1579 | 0.9112 |
+| 2 | 2.0468 | 1.6128 | 6.9242 | 4.1894 | 0.8274 |
+| 3 | 2.2951 | 1.8224 | 7.8861 | 5.2676 | 0.7829 |
+| 4 | 2.3904 | 1.8835 | 8.1651 | 5.7141 | 0.7645 |
+| 5 | 2.4414 | 1.9128 | 8.2989 | 5.9604 | 0.7544 |
 
-**Test Set**: 786 samples (20% of data)  
-**Hardware**: Intel i7-10700K, 32GB RAM
 
-### Feature Importance Analysis
-
-**Top 15 Most Important Features** (XGBoost):
-
-| Rank | Feature | Importance | Category |
-|------|---------|------------|----------|
-| 1 | `temp_lag_1` | 0.182 | Lag Feature |
-| 2 | `temp_roll_7_mean` | 0.145 | Rolling Stats |
-| 3 | `dayofyear_sin` | 0.091 | Temporal |
-| 4 | `dew` | 0.078 | Raw Feature |
-| 5 | `temp_roll_30_mean` | 0.067 | Rolling Stats |
-| 6 | `humidity_scale__humidity` | 0.054 | Preprocessed |
-| 7 | `temp_lag_7` | 0.042 | Lag Feature |
-| 8 | `solarradiation_scale__solarradiation` | 0.038 | Preprocessed |
-| 9 | `monsoon_NE` | 0.036 | Domain-Specific |
-| 10 | `daylength_hours` | 0.032 | Temporal |
-| 11 | `temp_roll_14_std` | 0.029 | Rolling Stats |
-| 12 | `dayofyear_cos` | 0.027 | Temporal |
-| 13 | `monsoon_SW` | 0.024 | Domain-Specific |
-| 14 | `heat_index` | 0.022 | Domain-Specific |
-| 15 | `temp_roll_90_mean` | 0.019 | Rolling Stats |
-
-**Key Insights**:
-- Lag features are the strongest predictors (short-term autocorrelation)
-- Rolling statistics capture medium/long-term trends
-- Temporal features essential for seasonal patterns
-- Monsoon features provide Hanoi-specific context
-
-### Prediction Accuracy by Season
-
-| Season | RMSE (°C) | MAE (°C) | Sample Count |
-|--------|-----------|----------|--------------|
-| Spring (Mar-May) | 0.93 | 0.69 | 198 |
-| Summer (Jun-Aug) | 0.72 | 0.53 | 196 |
-| Autumn (Sep-Nov) | 0.88 | 0.65 | 194 |
-| Winter (Dec-Feb) | 0.96 | 0.71 | 198 |
-
-**Observation**: Best performance in summer (more stable weather), slightly higher error in winter (more variability).
-
-### Error Distribution
-
-```
-Prediction Error Distribution:
-  Within ±0.5°C: 68.4%
-  Within ±1.0°C: 89.2%
-  Within ±1.5°C: 96.7%
-  Within ±2.0°C: 99.1%
-```
 
 ### Overfitting Analysis
 
 ```python
 # src/evaluation/check_overfitting.py
 
-Train RMSE: 0.51°C
-Test RMSE:  0.87°C
-Generalization Gap: 0.36°C (acceptable)
-
-Train R²: 0.991
-Test R²:  0.973
-R² Drop: 0.018 (minimal overfitting)
 ```
 
 **Conclusion**: Model generalizes well with acceptable overfitting levels.
@@ -1033,7 +792,7 @@ uvicorn example_api:app --host 0.0.0.0 --port 8000
 ## 🙏 Acknowledgments
 
 - **Visual Crossing Weather API** - Historical weather data provider
-- **XGBoost, LightGBM, CatBoost Teams** - Excellent gradient boosting frameworks
+- **XGBoost, LightGBM(contingency)** - Excellent gradient boosting frameworks
 - **Scikit-learn Community** - Comprehensive machine learning tools
 - **Gradio Team** - Easy-to-use ML interface framework
 - **Optuna Developers** - Powerful hyperparameter optimization
@@ -1043,6 +802,7 @@ uvicorn example_api:app --host 0.0.0.0 --port 8000
 ## 🔮 Roadmap & Future Work
 
 ### Short-term (Q1 2025)
+- [ ] Finish development of auto-update
 - [ ] Multi-variable forecasting (humidity, precipitation, wind)
 - [ ] Extend forecast horizon to 7-14 days
 - [ ] Add uncertainty quantification (confidence intervals)
