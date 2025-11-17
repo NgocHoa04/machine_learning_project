@@ -197,7 +197,7 @@ Final project/
 │   │   │── data_processing_hourly          # Preprocessing hourly pipeline
 │   │   └── Pipeline.py                     # End-to-end data pipeline
 │   │
-│   ├── features/                     # Feature engineering
+│   ├── features/                     # Feature engineering 
 │   │   ├── __init__.py
 │   │   ├── feature_engineering_daily.py
 │   │   └── feature_engineering_hourly.py
