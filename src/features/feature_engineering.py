@@ -1,9 +1,10 @@
 import numpy as np
 import pandas as pd
-from typing import Sequence, Optional, Union
-
+import numpy as np
+import pandas as pd
+from typing import List
+from typing import Sequence, Optional, Union, List
 from sklearn.base import BaseEstimator, TransformerMixin
-
 
 class HanoiDailyFE(BaseEstimator, TransformerMixin):
     """
@@ -248,10 +249,7 @@ class HanoiDailyFE(BaseEstimator, TransformerMixin):
 
         return out
 
-# FE_Hourly.py
-import numpy as np
-import pandas as pd
-from typing import Sequence, Optional
+
 
 class HanoiHourlyFE:
     
@@ -480,3 +478,98 @@ class HanoiHourlyFE:
         out = out.drop(columns=[c for c in final_drop_cols if c in out.columns], errors="ignore")
         
         return out
+
+
+class HourlyFeatureEngineer:
+    """
+    Professional Feature Engineering class for Time-Series Weather Forecasting (hourly data)
+    - time-based features
+    - lag features
+    - rolling statistics
+    - interaction features
+    """
+
+    def __init__(
+        self,
+        datetime_col: str = "datetime",
+        target_col: str = "temp",
+        lag_list: List[int] = [1, 3, 6, 12, 24],
+        rolling_list: List[int] = [3, 6, 12, 24],
+    ):
+        self.datetime_col = datetime_col
+        self.target_col = target_col
+        self.lag_list = lag_list
+        self.rolling_list = rolling_list
+
+    # -----------------------------
+    # TIME FEATURES
+    # -----------------------------
+    def add_time_features(self, df: pd.DataFrame) -> pd.DataFrame:
+        df = df.copy()
+        df["hour"] = df[self.datetime_col].dt.hour
+        df["dayofweek"] = df[self.datetime_col].dt.dayofweek
+        df["month"] = df[self.datetime_col].dt.month
+
+        # Cyclical encoding
+        df["sin_hour"] = np.sin(2 * np.pi * df["hour"] / 24)
+        df["cos_hour"] = np.cos(2 * np.pi * df["hour"] / 24)
+        df["sin_dayofyear"] = np.sin(2 * np.pi * df[self.datetime_col].dt.dayofyear / 365)
+        df["cos_dayofyear"] = np.cos(2 * np.pi * df[self.datetime_col].dt.dayofyear / 365)
+
+        df["is_weekend"] = (df["dayofweek"] >= 5).astype(int)
+        df.drop(columns=['hour', 'dayofweek', 'month'], inplace=True)
+        return df
+
+    # -----------------------------
+    # LAG FEATURES
+    # -----------------------------
+    def add_lag_features(self, df: pd.DataFrame, feature_list: List[str]) -> pd.DataFrame:
+        df = df.copy()
+        for feature in feature_list:
+            for lag in self.lag_list:
+                df[f"{feature}_lag_{lag}"] = df[feature].shift(lag)
+        return df
+
+    # -----------------------------
+    # ROLLING WINDOW FEATURES
+    # -----------------------------
+    def add_rolling_features(self, df: pd.DataFrame, feature_list: List[str]) -> pd.DataFrame:
+        df = df.copy()
+        for feature in feature_list:
+            for window in self.rolling_list:
+                df[f"{feature}_roll_mean_{window}"] = (
+                    df[feature].shift(1).rolling(window=window).mean()
+                )
+                df[f"{feature}_roll_std_{window}"] = (
+                    df[feature].shift(1).rolling(window=window).std()
+                )
+        return df
+
+    # -----------------------------
+    # INTERACTION FEATURES
+    # -----------------------------
+    def add_interaction_features(self, df: pd.DataFrame) -> pd.DataFrame:
+        df = df.copy()
+        if "temp" in df.columns and "humidity" in df.columns:
+            df["heat_index_like"] = df["temp"] * df["humidity"]
+
+        if "pressure" in df.columns:
+            df["pressure_change_3h"] = df["pressure"].diff(3)
+
+        return df
+
+    # -----------------------------
+    # MASTER FUNCTION: BUILD ALL FEATURES
+    # -----------------------------
+    def transform(self, df: pd.DataFrame, feature_list: List[str]) -> pd.DataFrame:
+        df = df.copy()
+        df[self.datetime_col] = pd.to_datetime(df[self.datetime_col])
+        df = df.sort_values(self.datetime_col)
+
+        df = self.add_time_features(df)
+        df = self.add_lag_features(df, feature_list)
+        df = self.add_rolling_features(df, feature_list)
+        df = self.add_interaction_features(df)
+
+        df = df.dropna()  # remove lag/rolling NaN
+        return df
