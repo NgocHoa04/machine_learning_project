@@ -1029,72 +1029,6 @@ uvicorn example_api:app --host 0.0.0.0 --port 8000
 
 ---
 
-## 🤝 Contributing
-
-Contributions are welcome! Please follow these guidelines:
-
-### Development Setup
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/your-feature-name`
-3. Make your changes
-4. Run tests: `pytest tests/`
-5. Commit with clear messages: `git commit -m "Add: feature description"`
-6. Push to your fork: `git push origin feature/your-feature-name`
-7. Open a Pull Request
-
-### Code Style
-
-- Follow **PEP 8** style guide
-- Use **type hints** for function signatures
-- Add **docstrings** to all classes and functions
-- Write **unit tests** for new features
-
-### Testing
-
-```bash
-# Run all tests
-pytest
-
-# Run with coverage
-pytest --cov=src tests/
-
-# Run specific test file
-pytest tests/test_feature_engineering.py
-```
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License**.
-
-```
-MIT License
-
-Copyright (c) 2024 NgocHoa04
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
-
----
-
 ## 🙏 Acknowledgments
 
 - **Visual Crossing Weather API** - Historical weather data provider
@@ -1183,7 +1117,7 @@ This production-ready document covers:
 - R²: 0.91 → 0.97
 - MAPE: 4.5% → 2.4%
 
-📖 **External Reference**: [Detailed Google Doc](https://docs.google.com/document/d/1rwIE-yz3UXNfQJMgkKdNaeJuP5qbNxwCuaOiGLtjZbA/edit)
+📖 **When we need to retrain model?**: [Detailed Google Doc](https://docs.google.com/document/d/1rwIE-yz3UXNfQJMgkKdNaeJuP5qbNxwCuaOiGLtjZbA/edit)
 
 ### Project Demonstrations
 
