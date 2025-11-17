@@ -1,5 +1,3 @@
 __pycache__/
 .env
 src/__pycache__/
-dataset/raw/concate_file.ipynb
-dataset/raw/concate_hourly.ipynb
