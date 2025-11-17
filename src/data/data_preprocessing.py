@@ -1,12 +1,17 @@
 import pandas as pd
 import numpy as np
+import re
 from sklearn.feature_selection import VarianceThreshold
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.preprocessing import StandardScaler, MinMaxScaler, FunctionTransformer, OneHotEncoder
+from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import IterativeImputer
+from sklearn.impute import KNNImputer
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from .data_helper import *          
-import re 
 
 # Remove features with low variance
 class VarianceThresholdSelector(BaseEstimator, TransformerMixin):
@@ -112,12 +117,6 @@ class DataTransformer(BaseEstimator, TransformerMixin):
             data_df[col] = pd.to_numeric(data_df[col], errors='ignore')
         
         return data_df
-    
-# IMPUTATION OF MISSING VALUES
-from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.experimental import enable_iterative_imputer
-from sklearn.impute import IterativeImputer
-from sklearn.ensemble import RandomForestRegressor
 
 class PrecipImputer(BaseEstimator, TransformerMixin):
     def __init__(self, precip_col="precip", precipprob_col="precipprob", short_limit=6):
@@ -149,7 +148,6 @@ class PrecipImputer(BaseEstimator, TransformerMixin):
             df[cols] = self.imputer.transform(df[cols])
         return df
     
-from sklearn.impute import KNNImputer
 
 class WinddirImputer(BaseEstimator, TransformerMixin):
     def __init__(self, winddir_col="winddir", windspeed_col="windspeed", short_limit=6, knn_neighbors=5):
@@ -225,8 +223,6 @@ class SolarradiationImputer(BaseEstimator, TransformerMixin):
             df[cols] = self.imputer.transform(df[cols])
         return df
     
-from sklearn.pipeline import Pipeline
-
 impute_pipeline = Pipeline([
     ("impute_precip", PrecipImputer()),
     ("impute_winddir", WinddirImputer()),

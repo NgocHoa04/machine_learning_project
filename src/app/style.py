@@ -18,7 +18,6 @@ html, body, #root, .gradio-container {{
     background-color: transparent !important;
 }}
 
-
 .app-container {{
     max-width: 1200px;
     margin: 40px auto;
@@ -180,6 +179,7 @@ html, body, #root, .gradio-container {{
     text-align: left;
     font-weight: 500;
 }}
+
 .glass-table-card * {{
     border-radius: 0 !important;
     clip-path: none !important;
@@ -187,13 +187,13 @@ html, body, #root, .gradio-container {{
 
 /* ========== FORM ELEMENTS ========== */
 
-.gradio-container .gradio-input label, 
+.gradio-container .gradio-input label,
 .gradio-container .gradio-slider label {{
     color: #E5E7EB;
 }}
 
-.gradio-container input, 
-.gradio-container textarea, 
+.gradio-container input,
+.gradio-container textarea,
 .gradio-container select {{
     background: rgba(15, 23, 42, 0.75) !important;
     border-radius: 12px !important;
@@ -203,5 +203,38 @@ html, body, #root, .gradio-container {{
 
 .gradio-container button {{
     border-radius: 999px !important;
+}}
+
+/* ========== DATETIME / CALENDAR ========== */
+
+/* đảm bảo popup lịch luôn nổi trên cùng và nằm giữa màn hình */
+.flatpickr-calendar {{
+    position: fixed !important;    
+    top: 120px !important;      
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+
+    z-index: 9999 !important;
+    font-family: inherit;
+    background: #0f172a !important;
+    color: #e5e7eb !important;
+    border-radius: 16px !important;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.9);
+}}
+
+.flatpickr-calendar .flatpickr-day {{
+    color: #e5e7eb;
+}}
+
+.flatpickr-calendar .flatpickr-day.today {{
+    border-color: #60a5fa;
+}}
+
+.flatpickr-calendar .flatpickr-day.selected,
+.flatpickr-calendar .flatpickr-day.startRange,
+.flatpickr-calendar .flatpickr-day.endRange {{
+    background: #3b82f6;
+    border-color: #3b82f6;
+    color: #f9fafb;
 }}
 """

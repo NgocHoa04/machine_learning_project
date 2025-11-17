@@ -44,6 +44,7 @@ class HanoiDailyFE(BaseEstimator, TransformerMixin):
                 "cloudcover",
                 "precipcover",
                 "daylength_hours",
+                "dew",
             ]
         else:
             self.lag_base_cols = list(lag_base_cols)
