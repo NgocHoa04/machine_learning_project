@@ -2,7 +2,8 @@ import pandas as pd
 import numpy as np
 from sklearn.pipeline import Pipeline
 from . import data_preprocessing
-import features.feature_engineering as feature_engineering
+import src.features.feature_engineering_daily as feature_engineering_daily
+import src.features.feature_engineering_hourly as feature_engineering_hourly
 
 
 def train_test_split(df):
@@ -24,13 +25,13 @@ def train_test_split_hourly(df):
 before_model_pipeline = Pipeline(steps=[
     ('remove_low_variance', data_preprocessing.remove_low_variance_pipeline),
     ('data_transformation', data_preprocessing.DataTransformer(categorical_features=['conditions'])),
-    ('feature_engineering', feature_engineering.HanoiDailyFE())
+    ('feature_engineering', feature_engineering_daily.HanoiDailyFE())
 ]
 )
 
 before_model_pipeline_hourly = Pipeline(steps=[
     ('remove_low_variance', data_preprocessing.remove_low_variance_pipeline),
     ('imputation_missing', data_preprocessing.impute_pipeline),
-    ('feature_engineering', feature_engineering.HanoiHourlyFE())
+    ('feature_engineering', feature_engineering_hourly.HanoiHourlyFE())
 ]
 )
