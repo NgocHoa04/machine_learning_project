@@ -463,18 +463,15 @@ The system employs ensemble learning with multiple gradient boosting algorithms:
 
 ```yaml
 XGBRegressor:
-  n_estimators: 500
-  learning_rate: 0.05
-  max_depth: 7
-  min_child_weight: 3
-  subsample: 0.8
-  colsample_bytree: 0.8
-  gamma: 0.1
-  reg_alpha: 0.1
-  reg_lambda: 1.0
-  objective: 'reg:squarederror'
-  eval_metric: 'rmse'
-  early_stopping_rounds: 50
+  n_estimators: 800
+  "learning_rate": 0.010884241446616105,
+  "max_depth": 3,
+  "gamma": 0.47994313253143916,
+  "reg_lambda": 7.417462539407784,
+  "reg_alpha": 0.7052016204390688,
+  "subsample": 0.5214374220725809,
+  "colsample_bytree": 0.5984212687818358,
+  "min_child_weight": 3
 ```
 
 **Advantages**:
@@ -515,79 +512,27 @@ LGBMRegressor:
 ```python
 # src/model/run_model_daily.py
 
-from src.model.daily_model import DailyTemperatureModel
-from src.evaluation.evaluation_metrics import ModelEvaluator
+from src.model.daily_model 
 
-# 1. Initialize model
-model = DailyTemperatureModel(model_type='xgboost')
+# 1. Load data
+X_train, y_train, X_test, y_test = model.train_test_split()
 
-# 2. Load data
-X_train, y_train, X_test, y_test = model.load_data()
+# 2. Hyperparameters tuning using Optuna integrated Walk-forward
 
-# 3. Train with cross-validation
-model.train(
-    X_train, y_train,
-    cv_folds=5,
-    optimize_hyperparams=True,
-    n_trials=100  # Optuna trials
-)
+XGBoost_pipeline = class MultiHorizonWalkForwardOptuna_XGBoost_Pipeline()
+XGBoost_pipeline.add_target_shifts()
+XGBoost_pipeline.create_walkforward_folds()
+XGBoost_pipeline.run_optuna(n_trials=100)
+XGBoost_pipeline.train_final_models()
 
-# 4. Evaluate
-evaluator = ModelEvaluator()
-results = evaluator.evaluate(model, X_test, y_test)
-
-# 5. Save model
-model.save('models_pkl/daily_temp_xgboost_v1.pkl')
-```
-
-### Hyperparameter Optimization
-
-Using **Optuna** for Bayesian optimization:
+# 3. Evaluation 
 
 ```python
-import optuna
+train_metrics = XGBoost_pipeline.evaluate_train_models()
 
-def objective(trial):
-    params = {
-        'n_estimators': trial.suggest_int('n_estimators', 100, 1000),
-        'learning_rate': trial.suggest_loguniform('learning_rate', 0.01, 0.3),
-        'max_depth': trial.suggest_int('max_depth', 3, 10),
-        'min_child_weight': trial.suggest_int('min_child_weight', 1, 10),
-        'subsample': trial.suggest_uniform('subsample', 0.5, 1.0),
-        'colsample_bytree': trial.suggest_uniform('colsample_bytree', 0.5, 1.0),
-    }
-    
-    model = XGBRegressor(**params)
-    score = cross_val_score(model, X_train, y_train, cv=5, scoring='neg_rmse')
-    return -score.mean()
+test_df_shifted = XGBoost_pipeline.prepare_test_dataset(test_dataset)
+test_metrics = XGBoost_pipeline.evaluate_final_models(test_df_shifted)
 
-study = optuna.create_study(direction='minimize')
-study.optimize(objective, n_trials=100)
-best_params = study.best_params
-```
-
-### Evaluation Metrics
-
-```python
-# src/evaluation/evaluation_metrics.py
-
-class ModelEvaluator:
-    
-    @staticmethod
-    def calculate_metrics(y_true, y_pred):
-        """Calculate comprehensive evaluation metrics"""
-        
-        rmse = np.sqrt(mean_squared_error(y_true, y_pred))
-        mae = mean_absolute_error(y_true, y_pred)
-        r2 = r2_score(y_true, y_pred)
-        mape = np.mean(np.abs((y_true - y_pred) / y_true)) * 100
-        
-        return {
-            'RMSE': rmse,      # Root Mean Squared Error (°C)
-            'MAE': mae,        # Mean Absolute Error (°C)
-            'R²': r2,          # Coefficient of Determination
-            'MAPE': mape       # Mean Absolute Percentage Error (%)
-        }
 ```
 
 **Metric Interpretations**:
@@ -599,30 +544,7 @@ class ModelEvaluator:
 | **R²** | $1 - \frac{\sum(y_i - \hat{y}_i)^2}{\sum(y_i - \bar{y})^2}$ | > 0.95 | Proportion of variance explained |
 | **MAPE** | $\frac{100\%}{n}\sum_{i=1}^{n}\|\frac{y_i - \hat{y}_i}{y_i}\|$ | < 5% | Relative error percentage |
 
-### Cross-Validation Strategy
 
-**Time Series Split** to prevent data leakage:
-
-```python
-from sklearn.model_selection import TimeSeriesSplit
-
-tscv = TimeSeriesSplit(n_splits=5)
-
-for train_idx, val_idx in tscv.split(X):
-    X_train, X_val = X[train_idx], X[val_idx]
-    y_train, y_val = y[train_idx], y[val_idx]
-    
-    # Train and validate
-    model.fit(X_train, y_train)
-    score = model.score(X_val, y_val)
-```
-
-**Why Time Series Split?**
-- Respects temporal order (no future data in training)
-- Mimics real-world deployment scenario
-- Prevents optimistic performance estimates
-
----
 
 ## 🚀 Installation
 
@@ -785,79 +707,31 @@ jupyter notebook notebooks/daily/05_run_model.ipynb
 ## 📈 Results
 
 ### Model Performance (Daily Forecasting)
+**Train**
+| Horizon | RMSE | MAE | MAPE (%) | MSE | R² |
+|------|------|------|----------|------|------|
+| 1 | 1.2064 | 0.9269 | 4.0046 | 1.4553 | 0.9441 |
+| 2 | 1.6675 | 1.2968 | 5.6879 | 2.7806 | 0.8934 |
+| 3 | 1.8056 | 1.4328 | 6.3273 | 3.2604 | 0.8752 |
+| 4 | 1.8200 | 1.4554 | 6.4304 | 3.3125 | 0.8734 |
+| 5 | 1.8213 | 1.4543 | 6.4200 | 3.3170 | 0.8733 |
 
-| Model | RMSE (°C) | MAE (°C) | R² Score | MAPE (%) | Training Time |
-|-------|-----------|----------|----------|----------|---------------|
-| **XGBoost** | **0.87** | **0.64** | **0.973** | **2.41** | 3.2 min |
-| LightGBM | 0.91 | 0.68 | 0.969 | 2.58 | 1.1 min |
-| CatBoost | 0.89 | 0.66 | 0.971 | 2.49 | 4.5 min |
-| Random Forest | 1.12 | 0.83 | 0.951 | 3.14 | 2.8 min |
-| Gradient Boosting | 1.05 | 0.78 | 0.958 | 2.95 | 5.2 min |
+**Test**
+| Horizon | RMSE | MAE  | MAPE | MSE | R² |
+|------|------|------|------|------|------|
+| 1 | 1.4689 | 1.1555 | 4.9016 | 2.1579 | 0.9112 |
+| 2 | 2.0468 | 1.6128 | 6.9242 | 4.1894 | 0.8274 |
+| 3 | 2.2951 | 1.8224 | 7.8861 | 5.2676 | 0.7829 |
+| 4 | 2.3904 | 1.8835 | 8.1651 | 5.7141 | 0.7645 |
+| 5 | 2.4414 | 1.9128 | 8.2989 | 5.9604 | 0.7544 |
 
-**Test Set**: 786 samples (20% of data)  
-**Hardware**: Intel i7-10700K, 32GB RAM
 
-### Feature Importance Analysis
-
-**Top 15 Most Important Features** (XGBoost):
-
-| Rank | Feature | Importance | Category |
-|------|---------|------------|----------|
-| 1 | `temp_lag_1` | 0.182 | Lag Feature |
-| 2 | `temp_roll_7_mean` | 0.145 | Rolling Stats |
-| 3 | `dayofyear_sin` | 0.091 | Temporal |
-| 4 | `dew` | 0.078 | Raw Feature |
-| 5 | `temp_roll_30_mean` | 0.067 | Rolling Stats |
-| 6 | `humidity_scale__humidity` | 0.054 | Preprocessed |
-| 7 | `temp_lag_7` | 0.042 | Lag Feature |
-| 8 | `solarradiation_scale__solarradiation` | 0.038 | Preprocessed |
-| 9 | `monsoon_NE` | 0.036 | Domain-Specific |
-| 10 | `daylength_hours` | 0.032 | Temporal |
-| 11 | `temp_roll_14_std` | 0.029 | Rolling Stats |
-| 12 | `dayofyear_cos` | 0.027 | Temporal |
-| 13 | `monsoon_SW` | 0.024 | Domain-Specific |
-| 14 | `heat_index` | 0.022 | Domain-Specific |
-| 15 | `temp_roll_90_mean` | 0.019 | Rolling Stats |
-
-**Key Insights**:
-- Lag features are the strongest predictors (short-term autocorrelation)
-- Rolling statistics capture medium/long-term trends
-- Temporal features essential for seasonal patterns
-- Monsoon features provide Hanoi-specific context
-
-### Prediction Accuracy by Season
-
-| Season | RMSE (°C) | MAE (°C) | Sample Count |
-|--------|-----------|----------|--------------|
-| Spring (Mar-May) | 0.93 | 0.69 | 198 |
-| Summer (Jun-Aug) | 0.72 | 0.53 | 196 |
-| Autumn (Sep-Nov) | 0.88 | 0.65 | 194 |
-| Winter (Dec-Feb) | 0.96 | 0.71 | 198 |
-
-**Observation**: Best performance in summer (more stable weather), slightly higher error in winter (more variability).
-
-### Error Distribution
-
-```
-Prediction Error Distribution:
-  Within ±0.5°C: 68.4%
-  Within ±1.0°C: 89.2%
-  Within ±1.5°C: 96.7%
-  Within ±2.0°C: 99.1%
-```
 
 ### Overfitting Analysis
 
 ```python
 # src/evaluation/check_overfitting.py
 
-Train RMSE: 0.51°C
-Test RMSE:  0.87°C
-Generalization Gap: 0.36°C (acceptable)
-
-Train R²: 0.991
-Test R²:  0.973
-R² Drop: 0.018 (minimal overfitting)
 ```
 
 **Conclusion**: Model generalizes well with acceptable overfitting levels.
@@ -917,7 +791,7 @@ uvicorn example_api:app --host 0.0.0.0 --port 8000
 ## 🙏 Acknowledgments
 
 - **Visual Crossing Weather API** - Historical weather data provider
-- **XGBoost, LightGBM, CatBoost Teams** - Excellent gradient boosting frameworks
+- **XGBoost, LightGBM(contingency)** - Excellent gradient boosting frameworks
 - **Scikit-learn Community** - Comprehensive machine learning tools
 - **Gradio Team** - Easy-to-use ML interface framework
 - **Optuna Developers** - Powerful hyperparameter optimization
@@ -927,6 +801,7 @@ uvicorn example_api:app --host 0.0.0.0 --port 8000
 ## 🔮 Roadmap & Future Work
 
 ### Short-term (Q1 2025)
+- [ ] Finish development of auto-update
 - [ ] Multi-variable forecasting (humidity, precipitation, wind)
 - [ ] Extend forecast horizon to 7-14 days
 - [ ] Add uncertainty quantification (confidence intervals)
