@@ -195,10 +195,11 @@ Final project/
 │   │
 │   ├── data/                         # Data processing modules
 │   │   ├── __init__.py
-│   │   ├── data_collection.py        # API integration
-│   │   ├── data_helper.py            # Helper functions
-│   │   ├── data_preprocessing.py     # Preprocessing pipeline
-│   │   └── Pipeline.py               # End-to-end data pipeline
+│   │   ├── data_collection.py              # API integration
+│   │   ├── data_helper.py                  # Helper functions
+│   │   ├── data_preprocessing_daily.py     # Preprocessing daily pipeline
+│   │   │── data_processing_hourly          # Preprocessing hourly pipeline
+│   │   └── Pipeline.py                     # End-to-end data pipeline
 │   │
 │   ├── features/                     # Feature engineering
 │   │   ├── __init__.py
