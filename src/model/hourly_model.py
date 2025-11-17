@@ -609,7 +609,7 @@ class MultiHorizonHourly_WalkForwardOptuna_XGBoost_Pipeline:
             "evaluation_train_set": train_metrics,
             "evaluation_test_set": test_metrics,
             "saved_model_files": saved_model_paths if saved_model_paths else {},
-            "optuna_fold_history": self.fold_history 
+            "optuna_fold_history": self.fold_history  
         }
 
         try:

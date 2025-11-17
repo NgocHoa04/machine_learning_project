@@ -349,7 +349,7 @@ class MultiHorizonWalkForwardOptuna_XGBoost_Pipeline:
         results = {}
         for h in self.horizons:
             results[h] = self.predict_horizon(X_today, h)
-        return results
+        return results 
 
     # ======================== 6b. BUILD PREDICTIONS FRAME (Plot) ========================
 
