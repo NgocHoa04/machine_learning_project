@@ -64,7 +64,7 @@ Build a robust temperature forecasting system for Hanoi that provides:
 
 ### 🎓 Project Scope
 
-This project is developed as part of the Machine Learning course curriculum at the National Economics University(NEU). The system demonstrates practical application of:
+This project is developed as part of the Machine Learning course curriculum at the National Economics University (NEU). The system demonstrates practical application of:
 
 - Time series analysis and forecasting
 - Ensemble machine learning techniques
@@ -74,8 +74,8 @@ This project is developed as part of the Machine Learning course curriculum at t
 
 ### 🔗 Quick Links
 
-- 🚀 **[Live Demo](https://drive.google.com/drive/u/0/folders/1qxo8A_yruLDpeifLbdUr1vLrOPpnDUw9?fbclid=IwY2xjawOH9ElleHRuA2FlbQIxMABicmlkETFqaUlhY3JwS0w5azZyNHpqc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MghjYWxsc2l0ZQEyAAEeqCkVtlZVsVavVi2W8AuEuJ4Onr_JJJrivB6AwCGjuAkLh-xWLVQK9pE-aN8_aem_lKjO0G34-rmARVVar1dYkg)** - Try the interactive forecasting system
-- 📺 **[UI](https://huggingface.co/spaces/dchwy/hanoi-temperature-forecast?fbclid=IwY2xjawOH9I5leHRuA2FlbQIxMABicmlkETFqaUlhY3JwS0w5azZyNHpqc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MghjYWxsc2l0ZQEyAAEefiz0M5t832xMjUFMtV19Lma-U2FIhkIIfJwlNEplTpj5YHEZcIpQKcsezBs_aem_9wJoCzQyt9zidIholH7xyQ)** - Project UI 
+- 🚀 **[Live Demo](https://huggingface.co/spaces/dchwy/hanoi-temperature-forecast?fbclid=IwY2xjawOH9I5leHRuA2FlbQIxMABicmlkETFqaUlhY3JwS0w5azZyNHpqc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MghjYWxsc2l0ZQEyAAEefiz0M5t832xMjUFMtV19Lma-U2FIhkIIfJwlNEplTpj5YHEZcIpQKcsezBs_aem_9wJoCzQyt9zidIholH7xyQ)** - Try the interactive forecasting system
+- 📺 **[Vieo Demo](https://drive.google.com/drive/u/0/folders/1qxo8A_yruLDpeifLbdUr1vLrOPpnDUw9?fbclid=IwY2xjawOH9ElleHRuA2FlbQIxMABicmlkETFqaUlhY3JwS0w5azZyNHpqc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MghjYWxsc2l0ZQEyAAEeqCkVtlZVsVavVi2W8AuEuJ4Onr_JJJrivB6AwCGjuAkLh-xWLVQK9pE-aN8_aem_lKjO0G34-rmARVVar1dYkg)** - Video demo about our UI
 - 📄 **[Documentation](src/report/when_we_need_to_retrain_model.txt)** - Comprehensive technical documentation
 - 💾 **[GitHub Repository](https://github.com/NgocHoa04/machine_learning_project)** - Source code and resources
 
