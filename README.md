@@ -64,7 +64,7 @@ Build a robust temperature forecasting system for Hanoi that provides:
 
 ### 🎓 Project Scope
 
-This project is developed as part of the Machine Learning course curriculum at the University of Economics and Business (UEB), Vietnam National University. The system demonstrates practical application of:
+This project is developed as part of the Machine Learning course curriculum at the National Economics University(NEU). The system demonstrates practical application of:
 
 - Time series analysis and forecasting
 - Ensemble machine learning techniques
