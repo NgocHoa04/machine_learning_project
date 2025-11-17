@@ -257,7 +257,7 @@ The system follows a structured ETL (Extract, Transform, Load) pipeline:
 - High humidity characteristic of Hanoi's climate
 - Monsoon wind patterns show distinct directional preferences
 
-### 3. Data Preprocessing (`data_preprocessing.py`)
+### 3. Data Preprocessing (`data_preprocessing_daily.py`, `data_preprocessing_hourly.py`)
 
 **Pipeline Components**:
 
@@ -301,7 +301,6 @@ Production-ready Gradio interface with:
 - Interactive visualizations
 - Model explanation (SHAP values)
 - Historical data browser
-- API endpoint for integration
 
 ---
 
@@ -309,7 +308,7 @@ Production-ready Gradio interface with:
 
 ### Overview
 
-The `HanoiWeatherFE` class transforms 12 raw weather variables into **140 engineered features** through domain-specific transformations tailored for Hanoi's climate.
+The `HanoiDailyFE` class transforms 12 raw weather variables into **140 engineered features** through domain-specific transformations tailored for Hanoi's climate.
 
 ### Feature Categories
 
@@ -434,10 +433,10 @@ def calculate_heat_index(temp: float, humidity: float) -> float:
 ### Implementation
 
 ```python
-from src.features.feature_engineering_daily import HanoiWeatherFE
+from src.features.feature_engineering_daily import HanoiDailyFE
 
 # Initialize feature engineer
-fe = HanoiWeatherFE(
+fe = HanoiDailyFE(
     date_col='datetime',
     lag_days=[1, 2, 3, 7],
     roll_windows=[3, 7, 14, 21, 30, 60, 90]
@@ -587,18 +586,16 @@ pip install -r requirements.txt
 
 **Core Dependencies**:
 ```txt
-numpy>=1.21.0
-pandas>=1.3.0
-scikit-learn>=1.0.0
-xgboost>=1.5.0
-lightgbm>=3.3.0
-catboost>=1.0.0
-optuna>=2.10.0
-gradio>=3.0.0
-plotly>=5.3.0
-requests>=2.26.0
-python-dotenv>=0.19.0
-pyyaml>=6.0
+numpy
+pandas
+scikit-learn
+lightgbm
+xgboost
+requests
+python-dotenv
+gradio
+plotly
+optuna
 ```
 
 #### 4. Configure Environment Variables
@@ -672,37 +669,6 @@ python src/app/app.py
 
 Access the interface at: `http://localhost:7860`
 
-### 6. Make Predictions via Python API
-
-```python
-from src.model.daily_model import DailyTemperatureModel
-
-# Load trained model
-model = DailyTemperatureModel.load('src/config/models_pkl/daily_temp_xgboost_v1.pkl')
-
-# Prepare input data
-input_data = {
-    'temp': 25.0,
-    'humidity': 75.0,
-    'windspeed': 10.0,
-    'winddir': 45.0,
-    'precip': 0.5,
-    # ... other features
-}
-
-# Predict
-predicted_temp = model.predict(input_data)
-print(f"Predicted temperature: {predicted_temp:.2f}°C")
-```
-
-### 7. Jupyter Notebooks
-
-Explore the analysis notebooks:
-
-```bash
-jupyter notebook notebooks/daily/05_run_model.ipynb
-```
-
 ---
 
 ## 📈 Results
@@ -730,8 +696,8 @@ jupyter notebook notebooks/daily/05_run_model.ipynb
 
 ### Overfitting Analysis
 
-```python
-# src/evaluation/check_overfitting.py
+```
+python src/evaluation/check_overfitting.py
 
 ```
 
@@ -755,39 +721,6 @@ python src/app/app.py
 - 🔍 Feature importance explorer
 - 📅 Date range selection
 - 💾 Export predictions to CSV
-
-### REST API (Optional Integration)
-
-For production deployment, wrap the model in a REST API:
-
-```python
-# example_api.py (not included in repo)
-
-from fastapi import FastAPI
-from pydantic import BaseModel
-from src.model.daily_model import DailyTemperatureModel
-
-app = FastAPI()
-model = DailyTemperatureModel.load('models_pkl/daily_temp_xgboost_v1.pkl')
-
-class PredictionRequest(BaseModel):
-    temp: float
-    humidity: float
-    windspeed: float
-    # ... other features
-
-@app.post("/predict")
-def predict(request: PredictionRequest):
-    prediction = model.predict(request.dict())
-    return {"predicted_temperature": prediction}
-```
-
-**Run**:
-```bash
-uvicorn example_api:app --host 0.0.0.0 --port 8000
-```
-
----
 
 ## 🙏 Acknowledgments
 
