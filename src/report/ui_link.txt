@@ -1,0 +1,5 @@
+================================================================================
+UI - HANOI WEATHER FORECASTING SYSTEM
+================================================================================
+
+link: https://huggingface.co/spaces/dchwy/hanoi-temperature-forecast?fbclid=IwY2xjawOH7ghleHRuA2FlbQIxMABicmlkETFiYXJyWE1NWTdkclM3eTV3c3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MghjYWxsc2l0ZQEyAAEevBMjPMrh--MewLSu5fQlfqqaPbYlupB7QjGpkqdNLVzpndfDW5OBHso11X4_aem_RYUszr3uKDd-IZn-N1iJwg

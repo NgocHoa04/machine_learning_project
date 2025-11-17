@@ -1,0 +1,20 @@
+================================================================================
+MODEL RETRAINING GUIDELINES - HANOI WEATHER FORECASTING SYSTEM
+================================================================================
+
+Document:
+https://docs.google.com/document/d/1rwIE-yz3UXNfQJMgkKdNaeJuP5qbNxwCuaOiGLtjZbA/edit
+
+================================================================================
+
+For detailed guidelines on when to retrain the temperature forecasting 
+model, please refer to the Google Document linked above.
+
+The document covers:
+- Performance degradation triggers
+- Data drift detection methods
+- Retraining schedule recommendations
+- Model monitoring best practices
+- Production deployment considerations
+
+================================================================================
