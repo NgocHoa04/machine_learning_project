@@ -74,8 +74,8 @@ This project is developed as part of the Machine Learning course curriculum at t
 
 ### 🔗 Quick Links
 
-- 🚀 **[Live Demo](src/report/github_ui_link.txt)** - Try the interactive forecasting system
-- 📺 **[Video Presentation](src/report/video_link.txt)** - Project walkthrough and demonstration
+- 🚀 **[Live Demo](https://drive.google.com/drive/u/0/folders/1qxo8A_yruLDpeifLbdUr1vLrOPpnDUw9?fbclid=IwY2xjawOH9ElleHRuA2FlbQIxMABicmlkETFqaUlhY3JwS0w5azZyNHpqc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MghjYWxsc2l0ZQEyAAEeqCkVtlZVsVavVi2W8AuEuJ4Onr_JJJrivB6AwCGjuAkLh-xWLVQK9pE-aN8_aem_lKjO0G34-rmARVVar1dYkg)** - Try the interactive forecasting system
+- 📺 **[UI](https://huggingface.co/spaces/dchwy/hanoi-temperature-forecast?fbclid=IwY2xjawOH9I5leHRuA2FlbQIxMABicmlkETFqaUlhY3JwS0w5azZyNHpqc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MghjYWxsc2l0ZQEyAAEefiz0M5t832xMjUFMtV19Lma-U2FIhkIIfJwlNEplTpj5YHEZcIpQKcsezBs_aem_9wJoCzQyt9zidIholH7xyQ)** - Project UI 
 - 📄 **[Documentation](src/report/when_we_need_to_retrain_model.txt)** - Comprehensive technical documentation
 - 💾 **[GitHub Repository](https://github.com/NgocHoa04/machine_learning_project)** - Source code and resources
 
@@ -977,25 +977,6 @@ R² Drop: 0.018 (minimal overfitting)
 
 **Conclusion**: Model generalizes well with acceptable overfitting levels.
 
-### Visualizations
-
-#### 1. Actual vs Predicted Temperature
-
-![Temperature Predictions](docs/images/actual_vs_predicted.png)
-
-#### 2. Residual Analysis
-
-![Residual Plot](docs/images/residuals.png)
-
-#### 3. Feature Importance
-
-![Feature Importance](docs/images/feature_importance.png)
-
-#### 4. Seasonal Performance
-
-![Seasonal Accuracy](docs/images/seasonal_performance.png)
-
----
 
 ## 📡 API Documentation
 
@@ -1124,35 +1105,6 @@ SOFTWARE.
 
 ---
 
-## 👤 Author
-
-**NgocHoa04**
-
-- GitHub: [@NgocHoa04](https://github.com/NgocHoa04)
-- Repository: [machine_learning_project](https://github.com/NgocHoa04/machine_learning_project)
-- LinkedIn: [Connect](https://linkedin.com/in/ngochoa04) *(update with your actual profile)*
-
----
-
-## 📞 Contact & Support
-
-### Issues & Bug Reports
-- Open an issue: [GitHub Issues](https://github.com/NgocHoa04/machine_learning_project/issues)
-- Please include:
-  - Error messages and stack traces
-  - Steps to reproduce
-  - System information (OS, Python version)
-
-### Feature Requests
-- Submit via: [GitHub Discussions](https://github.com/NgocHoa04/machine_learning_project/discussions)
-- Describe the feature and use case
-
-### General Questions
-- Contact via GitHub profile
-- Check existing issues first
-
----
-
 ## 🔮 Roadmap & Future Work
 
 ### Short-term (Q1 2025)
@@ -1236,8 +1188,7 @@ This production-ready document covers:
 ### Project Demonstrations
 
 🖥️ **Live Demo Links**:
-- GitHub UI Demo: See `src/report/github_ui_link.txt`
-- Video Walkthrough: See `src/report/video_link.txt`
+- GitHub UI Demo: See `https://huggingface.co/spaces/dchwy/hanoi-temperature-forecast?fbclid=IwY2xjawOH9I5leHRuA2FlbQIxMABicmlkETFqaUlhY3JwS0w5azZyNHpqc3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MghjYWxsc2l0ZQEyAAEefiz0M5t832xMjUFMtV19Lma-U2FIhkIIfJwlNEplTpj5YHEZcIpQKcsezBs_aem_9wJoCzQyt9zidIholH7xyQ`
 
 ### Model Evaluation Module
 
@@ -1311,13 +1262,3 @@ Last Updated: November 2024
 ```
 
 ---
-
-## ⭐ Star History
-
-If you find this project helpful, please consider giving it a star ⭐!
-
-[![Star History Chart](https://api.star-history.com/svg?repos=NgocHoa04/machine_learning_project&type=Date)](https://star-history.com/#NgocHoa04/machine_learning_project&Date)
-
----
-
-**Built with ❤️ for accurate weather forecasting**

@@ -184,8 +184,8 @@ class MultiHorizonWalkForwardOptuna_XGBoost_Pipeline:
         A single set of hyperparameters is shared for all horizons.
         The objective value is the mean of the mean-RMSE across horizons.
 
-        - Dùng early_stopping_rounds trong constructor XGBRegressor (hợp XGBoost mới).
-        - Dùng trial.report + trial.should_prune để prune trial tệ.
+        - Uses early_stopping_rounds in XGBRegressor constructor (compatible with new XGBoost).
+        - Uses trial.report + trial.should_prune to prune poor trials.
         """
         def objective(trial):
             params = {
@@ -228,7 +228,6 @@ class MultiHorizonWalkForwardOptuna_XGBoost_Pipeline:
                     )
 
                     preds = model.predict(X_val)
-                    # GIỮ LOG Y HỆT EM, NHƯNG Ở ĐÂY CHỊ DÙNG RMSE ĐÚNG NGHĨA
                     rmse = mean_squared_error(y_val, preds)
                     ss_res = np.sum((y_val - preds) ** 2)
                     ss_tot = np.sum((y_val - np.mean(y_val)) ** 2)
@@ -279,7 +278,7 @@ class MultiHorizonWalkForwardOptuna_XGBoost_Pipeline:
         """
         Run Optuna to find shared hyperparameters for all horizons.
 
-        Dùng MedianPruner để cắt trial tệ.
+        Uses MedianPruner to prune poor trials.
         """
         objective_fn = self.create_objective()
 
@@ -360,10 +359,10 @@ class MultiHorizonWalkForwardOptuna_XGBoost_Pipeline:
         Parameters
         ----------
         df_with_shift : pd.DataFrame
-            DataFrame (train hoặc test) đã có sẵn các cột:
+            DataFrame (train or test) that already has the columns:
             - self.date_col
             - f"{self.target_col}_h{h}"
-            - f"{self.date_col}_h{h}" (nếu có)
+            - f"{self.date_col}_h{h}" (if available)
 
         Returns
         -------
@@ -389,7 +388,6 @@ class MultiHorizonWalkForwardOptuna_XGBoost_Pipeline:
         if f"{self.date_col}_h{h}" in df_with_shift.columns:
             target_time = df_with_shift[f"{self.date_col}_h{h}"]
         else:
-            # fallback: dùng feature_time nếu không có date_h
             target_time = feature_time
 
         df_pred = pd.DataFrame({
@@ -407,7 +405,7 @@ class MultiHorizonWalkForwardOptuna_XGBoost_Pipeline:
         Parameters
         ----------
         df_with_shift : pd.DataFrame
-            DataFrame (thường là test_df đã shift bằng prepare_test_dataset).
+            DataFrame (typically test_df already shifted via prepare_test_dataset).
         h : int
             Horizon to plot (must be in self.horizons).
         use_target_time : bool, default True
